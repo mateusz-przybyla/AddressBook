@@ -235,28 +235,45 @@ void showAllContacts(vector <Contact> contacts)
     }
 }
 
-void reloadContactsInFile(vector <Contact> contacts)
+int getContactIdFromLine(string line)
 {
-    ofstream contactsFile;
-    contactsFile.open("address_book.txt", ios::out);
+    int position = 0;
+    string contactId = "";
+
+    while (isdigit(line[position]))
+    {
+        contactId += line[position];
+        position++;
+    }
+
+    return atoi(contactId.c_str());
+}
+
+void deleteLineInFile(int contactIdToBeDeleted)
+{
+    string line = "";
+
+    ifstream contactsFile("address_book.txt");
+    ofstream tempFile;
+    tempFile.open("address_book_temp.txt", ios::out | ios::app);
 
     if (contactsFile.good())
     {
-        for (vector <Contact>::iterator itr = contacts.begin(); itr != contacts.end(); itr++)
+        while (getline(contactsFile, line))
         {
-            contactsFile << itr -> id << "|";
-            contactsFile << itr -> firstName << "|";
-            contactsFile << itr -> surname << "|";
-            contactsFile << itr -> phoneNumber << "|";
-            contactsFile << itr -> email << "|";
-            contactsFile << itr -> address << "|" << endl;
+            if (contactIdToBeDeleted == getContactIdFromLine(line))
+            {
+                tempFile << "";
+            }
+            else
+            {
+                tempFile << line << endl;
+            }
         }
         contactsFile.close();
-    }
-    else
-    {
-        cout << endl << "Cannot open the file address_book.txt." << endl;
-        Sleep(1500);
+        tempFile.close();
+        remove("address_book.txt");
+        rename("address_book_temp.txt", "address_book.txt");
     }
 }
 
@@ -280,7 +297,7 @@ void deleteContact(vector <Contact> &contacts)
             if (getChar() == 't')
             {
                 contacts.erase(itr);
-                reloadContactsInFile(contacts);
+                deleteLineInFile(contactIdToBeDeleted);
 
                 cout << endl << "Contact was deleted.";
                 Sleep(1500);
@@ -315,7 +332,7 @@ char showSubmenu(char choice)
 
     return choice;
 }
-
+/*
 void editContact(vector <Contact> &contacts)
 {
     int contactIdToBeEdited = 0;
@@ -360,7 +377,7 @@ void editContact(vector <Contact> &contacts)
         Sleep(1500);
     }
 }
-
+*/
 void closeApp()
 {
     cout << endl << "End of application." << endl;
@@ -397,7 +414,7 @@ int main()
         case '3': searchBySurname(contacts); break;
         case '4': showAllContacts(contacts); break;
         case '5': deleteContact(contacts); break;
-        case '6': editContact(contacts); break;
+        //case '6': editContact(contacts); break;
         case '9': closeApp(); break;
         }
     }
