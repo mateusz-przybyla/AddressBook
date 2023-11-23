@@ -332,7 +332,46 @@ char showSubmenu(char choice)
 
     return choice;
 }
-/*
+
+void editDataInFile(int contactIdToBeEdited, vector <Contact> contacts)
+{
+    string line = "";
+
+    ifstream contactsFile("address_book.txt");
+    ofstream tempFile;
+    tempFile.open("address_book_temp.txt", ios::out | ios::app);
+
+    if (contactsFile.good())
+    {
+        while (getline(contactsFile, line))
+        {
+            if (contactIdToBeEdited == getContactIdFromLine(line))
+            {
+                for (vector <Contact>::iterator itr = contacts.begin(); itr != contacts.end(); itr++)
+                {
+                    if (itr -> id == contactIdToBeEdited)
+                    {
+                        tempFile << itr -> id << "|";
+                        tempFile << itr -> firstName << "|";
+                        tempFile << itr -> surname << "|";
+                        tempFile << itr -> phoneNumber << "|";
+                        tempFile << itr -> email << "|";
+                        tempFile << itr -> address << "|" << endl;
+                    }
+                }
+            }
+            else
+            {
+                tempFile << line << endl;
+            }
+        }
+        contactsFile.close();
+        tempFile.close();
+        remove("address_book.txt");
+        rename("address_book_temp.txt", "address_book.txt");
+    }
+}
+
 void editContact(vector <Contact> &contacts)
 {
     int contactIdToBeEdited = 0;
@@ -366,7 +405,7 @@ void editContact(vector <Contact> &contacts)
                 case '6': break;
                 default: cout << endl << "There is no such option. Try again." << endl << endl; break;
             }
-            reloadContactsInFile(contacts);
+            editDataInFile(contactIdToBeEdited, contacts);
             Sleep(1500);
         }
     }
@@ -377,7 +416,7 @@ void editContact(vector <Contact> &contacts)
         Sleep(1500);
     }
 }
-*/
+
 void closeApp()
 {
     cout << endl << "End of application." << endl;
@@ -414,7 +453,7 @@ int main()
         case '3': searchBySurname(contacts); break;
         case '4': showAllContacts(contacts); break;
         case '5': deleteContact(contacts); break;
-        //case '6': editContact(contacts); break;
+        case '6': editContact(contacts); break;
         case '9': closeApp(); break;
         }
     }
