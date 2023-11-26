@@ -62,9 +62,6 @@ void writeNewContactInFile(Contact contact)
         contactsFile << contact.email << "|";
         contactsFile << contact.address << "|" << endl;
         contactsFile.close();
-
-        cout << endl << "New contact was added." << endl;
-        Sleep(1500);
     }
     else
     {
@@ -96,6 +93,9 @@ void addContact(vector <Contact> &contacts)
 
     contacts.push_back(contact);
     writeNewContactInFile(contact);
+
+    cout << endl << "New contact was added." << endl;
+    Sleep(1500);
 }
 
 Contact getDataFromFile(string lineContent)
@@ -426,35 +426,61 @@ void closeApp()
 int main()
 {
     vector <Contact> contacts;
+    int idOfLoggedInUser = 0;
     char choice;
 
     getContactsFromFile(contacts);
 
     while (true)
     {
-        system("cls");
-        cout << "======================================" << endl;
-        cout << ">>>>>>>>>>>> ADDRESS BOOK <<<<<<<<<<<<" << endl;
-        cout << "======================================" << endl << endl;
-        cout << "1. Add new contact" << endl;
-        cout << "2. Search by first name" << endl;
-        cout << "3. Search by surname" << endl;
-        cout << "4. Show all contacts" << endl;
-        cout << "5. Delete contact" << endl;
-        cout << "6. Edit contact" << endl;
-        cout << "9. Close app" << endl;
-        cout << endl <<"Your choice: ";
-        choice = getChar();
-
-        switch (choice)
+        if (idOfLoggedInUser == 0)
         {
-        case '1': addContact(contacts); break;
-        case '2': searchByFirstName(contacts); break;
-        case '3': searchBySurname(contacts); break;
-        case '4': showAllContacts(contacts); break;
-        case '5': deleteContact(contacts); break;
-        case '6': editContact(contacts); break;
-        case '9': closeApp(); break;
+            system("cls");
+            cout << "======================================" << endl;
+            cout << ">>>>>>>>>>>>>> MAIN MENU <<<<<<<<<<<<<" << endl;
+            cout << "======================================" << endl << endl;
+            cout << "1. Create an account" << endl;
+            cout << "2. Sign in" << endl;
+            cout << "9. Close app" << endl;
+            cout << "======================================" << endl;
+            cout << "Your choice: ";
+            choice = getChar();
+
+            switch (choice)
+            {
+            //case '1': registration(users); break;
+            //case '2': idOfLoggedInUser = login(users); break;
+            case '9': exit(0); break;
+            }
+        }
+        else
+        {
+            system("cls");
+            cout << "======================================" << endl;
+            cout << ">>>>>>>>>>>>>> USER MENU <<<<<<<<<<<<<" << endl;
+            cout << "======================================" << endl << endl;
+            cout << "1. Add new contact" << endl;
+            cout << "2. Search by first name" << endl;
+            cout << "3. Search by surname" << endl;
+            cout << "4. Show all contacts" << endl;
+            cout << "5. Delete contact" << endl;
+            cout << "6. Edit contact" << endl;
+            cout << "======================================" << endl;
+            cout << "7. Change password" << endl;
+            cout << "8. Sign out" << endl;
+            cout << "======================================" << endl;
+            cout << "Your choice: ";
+            choice = getChar();
+
+            switch (choice)
+            {
+            case '1': addContact(contacts); break;
+            case '2': searchByFirstName(contacts); break;
+            case '3': searchBySurname(contacts); break;
+            case '4': showAllContacts(contacts); break;
+            case '5': deleteContact(contacts); break;
+            case '6': editContact(contacts); break;
+            }
         }
     }
     return 0;
