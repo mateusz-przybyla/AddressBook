@@ -5,6 +5,12 @@
 
 using namespace std;
 
+struct User
+{
+    int userId = 0;
+    string userName = "", password = "";
+};
+
 struct Contact
 {
     int id = 0;
@@ -423,13 +429,129 @@ void closeApp()
     exit(0);
 }
 
+void writeNewUserInFile(User user)
+{
+    ofstream usersFile;
+    usersFile.open("users.txt", ios::out | ios::app);
+
+    if (usersFile.good())
+    {
+        usersFile << user.userId << "|";
+        usersFile << user.userName << "|";
+        usersFile << user.password << "|" << endl;
+        usersFile.close();
+    }
+}
+
+User getUserDataFromFile(string lineContent)
+{
+    User user;
+    int numberOfData = 1;
+    string singleData = "";
+
+    for (size_t position = 0; position < lineContent.length(); position++)
+    {
+        if (lineContent[position] != '|')
+        {
+            singleData += lineContent[position];
+        }
+        else
+        {
+            switch (numberOfData)
+            {
+            case 1: user.userId = atoi(singleData.c_str()); break;
+            case 2: user.userName = singleData; break;
+            case 3: user.password = singleData; break;
+            }
+            singleData = "";
+            numberOfData++;
+        }
+    }
+    return user;
+}
+
+void getUsersFromFile(vector <User> &users)
+{
+    User user;
+    string lineContent = "";
+
+    ifstream usersFile("users.txt");
+
+    if (usersFile.good())
+    {
+        while (getline(usersFile, lineContent))
+        {
+            user = getUserDataFromFile(lineContent);
+            users.push_back(user);
+        }
+        usersFile.close();
+    }
+    else
+    {
+        cout << endl << "File with users does not exist." << endl;
+        Sleep(1500);
+    }
+}
+
+bool checkUserName(vector <User> users, string nameSuggestion)
+{
+    bool ifAvailable = false;
+
+    for (vector <User>::iterator itr = users.begin(); itr != users.end(); itr++)
+    {
+        if (itr -> userName == nameSuggestion)
+        {
+            ifAvailable = true;
+            break;
+        }
+    }
+    return ifAvailable;
+}
+
+void registration(vector <User> &users)
+{
+    User user;
+    string nameSuggestion = "";
+
+    system("cls");
+    cout << ">>> ADDING NEW USER <<<" << endl << endl;
+
+    cout << "Enter username: ";
+    nameSuggestion = readLine();
+
+    while (true)
+    {
+        if (checkUserName(users, nameSuggestion))
+        {
+            cout << endl << "Such a user exists. Enter another user name: ";
+            nameSuggestion = readLine();
+        }
+        else
+        {
+            user.userName = nameSuggestion;
+            break;
+        }
+    }
+
+    cout << "Enter password: ";
+    user.password = readLine();
+    users.empty() ? user.userId = 1 : user.userId = users.back().userId + 1;
+
+    users.push_back(user);
+    writeNewUserInFile(user);
+    cout << endl << "Account created." << endl;
+    Sleep(1500);
+}
+
 int main()
 {
+    vector <User> users;
     vector <Contact> contacts;
     int idOfLoggedInUser = 0;
     char choice;
 
-    getContactsFromFile(contacts);
+    getUsersFromFile(users);
+    //getContactsFromFile(contacts);
 
     while (true)
     {
@@ -448,7 +570,7 @@ int main()
 
             switch (choice)
             {
-            //case '1': registration(users); break;
+            case '1': registration(users); break;
             //case '2': idOfLoggedInUser = login(users); break;
             case '9': exit(0); break;
             }
