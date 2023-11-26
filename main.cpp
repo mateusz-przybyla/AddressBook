@@ -140,7 +140,7 @@ Contact getDataFromFile(string lineContent)
     return contact;
 }
 
-int getContactsFromFile(vector <Contact> &contacts)
+int getContactsFromFile(vector <Contact> &contacts, int idOfLoggedInUser)
 {
     Contact contact;
     string lineContent = "";
@@ -154,7 +154,11 @@ int getContactsFromFile(vector <Contact> &contacts)
         {
             contact = getDataFromFile(lineContent);
             idOfLastContact = contact.contactId;
-            contacts.push_back(contact);
+
+            if (contact.userId == idOfLoggedInUser)
+            {
+                contacts.push_back(contact);
+            }
         }
         contactsFile.close();
     }
@@ -668,7 +672,7 @@ int main()
                 idOfLoggedInUser = login(users);
                 if (idOfLoggedInUser > 0)
                 {
-                    idOfLastContact = getContactsFromFile(contacts);
+                    idOfLastContact = getContactsFromFile(contacts, idOfLoggedInUser);
                 }
                 break;
             case '9': exit(0); break;
@@ -702,7 +706,7 @@ int main()
             case '5':
                 deleteContact(contacts);
                 contacts.clear();
-                idOfLastContact = getContactsFromFile(contacts);
+                idOfLastContact = getContactsFromFile(contacts, idOfLoggedInUser);
                 break;
             case '6': editContact(contacts); break;
             case '7': changePassword(users, idOfLoggedInUser); break;
