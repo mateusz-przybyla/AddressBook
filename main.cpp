@@ -687,6 +687,7 @@ int main()
             case '5': deleteContact(contacts); break;
             case '6': editContact(contacts); break;
             case '7': changePassword(users, idOfLoggedInUser); break;
+            case '8': idOfLoggedInUser = 0; break;
             }
         }
     }
