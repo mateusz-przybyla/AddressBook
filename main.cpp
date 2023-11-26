@@ -576,6 +576,57 @@ int login(vector <User> users)
     return 0;
 }
 
+void editUserDataInFile(vector <User> users, int idOfLoggedInUser)
+{
+    string line = "";
+
+    ifstream usersFile("users.txt");
+    ofstream tempFile;
+    tempFile.open("users_temp.txt", ios::out | ios::app);
+
+    if (usersFile.good())
+    {
+        while (getline(usersFile, line))
+        {
+            if (idOfLoggedInUser == getContactIdFromLine(line))
+            {
+                for (vector <User>::iterator itr = users.begin(); itr != users.end(); itr++)
+                {
+                    if (itr -> userId == idOfLoggedInUser)
+                    {
+                        tempFile << itr -> userId << "|";
+                        tempFile << itr -> userName << "|";
+                        tempFile << itr -> password << "|" << endl;
+                    }
+                }
+            }
+            else
+            {
+                tempFile << line << endl;
+            }
+        }
+        usersFile.close();
+        tempFile.close();
+        remove("users.txt");
+        rename("users_temp.txt", "users.txt");
+    }
+}
+
+void changePassword(vector <User> &users, int idOfLoggedInUser)
+{
+    for (vector <User>::iterator itr = users.begin(); itr != users.end(); itr++)
+    {
+        if (itr -> userId == idOfLoggedInUser)
+        {
+            cout << endl <<"Enter new password: ";
+            itr -> password = readLine();
+            editUserDataInFile(users, idOfLoggedInUser);
+            cout << endl << "Password was changed." << endl;
+            Sleep(1500);
+        }
+    }
+}
+
 int main()
 {
     vector <User> users;
@@ -635,6 +686,7 @@ int main()
             case '4': showAllContacts(contacts); break;
             case '5': deleteContact(contacts); break;
             case '6': editContact(contacts); break;
+            case '7': changePassword(users, idOfLoggedInUser); break;
             }
         }
     }
