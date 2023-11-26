@@ -543,6 +543,39 @@ void registration(vector <User> &users)
     Sleep(1500);
 }
 
+int login(vector <User> users)
+{
+    string enteredName, enteredPassword;
+
+    cout << endl << "Enter user name: ";
+    enteredName = readLine();
+
+    for (vector <User>::iterator itr = users.begin(); itr != users.end(); itr++)
+    {
+        if (itr -> userName == enteredName)
+        {
+            for (int attempt = 0; attempt < 3; attempt++)
+            {
+                cout << "Enter password. Attempts left " << 3 - attempt << ": ";
+                enteredPassword = readLine();
+
+                if (itr -> password == enteredPassword)
+                {
+                    cout << endl << "You logged in.";
+                    Sleep(1500);
+                    return itr -> userId;
+                }
+            }
+            cout << endl << "You have entered the wrong password 3 times. Wait 3 seconds before next attempt.";
+            Sleep(3000);
+            return 0;
+        }
+    }
+    cout << endl << "There is no user with that login.";
+    Sleep(1500);
+    return 0;
+}
+
 int main()
 {
     vector <User> users;
@@ -571,7 +604,7 @@ int main()
             switch (choice)
             {
             case '1': registration(users); break;
-            //case '2': idOfLoggedInUser = login(users); break;
+            case '2': idOfLoggedInUser = login(users); break;
             case '9': exit(0); break;
             }
         }
