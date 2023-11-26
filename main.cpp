@@ -38,10 +38,12 @@ char getChar()
             character = input[0];
             break;
         }
-        cout << "This is not a single character. Type again." << endl;
+        cout << endl << "This is not a single character. Type again: ";
     }
     return character;
 }
+
+// CONTACT FUNCTIONS:
 
 void showContact(Contact contact)
 {
@@ -58,7 +60,7 @@ void showContact(Contact contact)
 void writeNewContactInFile(Contact contact)
 {
     ofstream contactsFile;
-    contactsFile.open("address_book.txt", ios::out | ios::app);
+    contactsFile.open("contacts.txt", ios::out | ios::app);
 
     if (contactsFile.good())
     {
@@ -109,7 +111,7 @@ int addContact(vector <Contact> &contacts, int idOfLoggedInUser, int idOfLastCon
     return idOfLastContact + 1;
 }
 
-Contact getDataFromFile(string lineContent)
+Contact getContactDataFromFile(string lineContent)
 {
     Contact contact;
     int numberOfData = 1;
@@ -146,13 +148,13 @@ int getContactsFromFile(vector <Contact> &contacts, int idOfLoggedInUser)
     string lineContent = "";
     int idOfLastContact = 0;
 
-    ifstream contactsFile("address_book.txt");
+    ifstream contactsFile("contacts.txt");
 
     if (contactsFile.good())
     {
         while (getline(contactsFile, lineContent))
         {
-            contact = getDataFromFile(lineContent);
+            contact = getContactDataFromFile(lineContent);
             idOfLastContact = contact.contactId;
 
             if (contact.userId == idOfLoggedInUser)
@@ -272,9 +274,9 @@ void deleteLineInFile(int contactIdToBeDeleted)
 {
     string line = "";
 
-    ifstream contactsFile("address_book.txt");
+    ifstream contactsFile("contacts.txt");
     ofstream tempFile;
-    tempFile.open("address_book_temp.txt", ios::out | ios::app);
+    tempFile.open("contacts_temp.txt", ios::out | ios::app);
 
     if (contactsFile.good())
     {
@@ -291,8 +293,8 @@ void deleteLineInFile(int contactIdToBeDeleted)
         }
         contactsFile.close();
         tempFile.close();
-        remove("address_book.txt");
-        rename("address_book_temp.txt", "address_book.txt");
+        remove("contacts.txt");
+        rename("contacts_temp.txt", "contacts.txt");
     }
 }
 
@@ -352,13 +354,13 @@ char showSubmenu(char choice)
     return choice;
 }
 
-void editDataInFile(int contactIdToBeEdited, vector <Contact> contacts)
+void editContactDataInFile(vector <Contact> contacts, int contactIdToBeEdited)
 {
     string line = "";
 
-    ifstream contactsFile("address_book.txt");
+    ifstream contactsFile("contacts.txt");
     ofstream tempFile;
-    tempFile.open("address_book_temp.txt", ios::out | ios::app);
+    tempFile.open("contacts_temp.txt", ios::out | ios::app);
 
     if (contactsFile.good())
     {
@@ -387,8 +389,8 @@ void editDataInFile(int contactIdToBeEdited, vector <Contact> contacts)
         }
         contactsFile.close();
         tempFile.close();
-        remove("address_book.txt");
-        rename("address_book_temp.txt", "address_book.txt");
+        remove("contacts.txt");
+        rename("contacts_temp.txt", "contacts.txt");
     }
 }
 
@@ -425,7 +427,7 @@ void editContact(vector <Contact> &contacts)
                 case '6': break;
                 default: cout << endl << "There is no such option. Try again." << endl << endl; break;
             }
-            editDataInFile(contactIdToBeEdited, contacts);
+            editContactDataInFile(contacts, contactIdToBeEdited);
             Sleep(1500);
         }
     }
@@ -437,11 +439,7 @@ void editContact(vector <Contact> &contacts)
     }
 }
 
-void closeApp()
-{
-    cout << endl << "End of application." << endl;
-    exit(0);
-}
+//USER FUNCTIONS:
 
 void writeNewUserInFile(User user)
 {
@@ -639,6 +637,12 @@ void changePassword(vector <User> &users, int idOfLoggedInUser)
             Sleep(1500);
         }
     }
+}
+
+void closeApp()
+{
+    cout << endl << "End of application." << endl;
+    exit(0);
 }
 
 int main()
