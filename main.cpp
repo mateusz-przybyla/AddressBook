@@ -5,6 +5,12 @@
 
 using namespace std;
 
+struct User
+{
+    int userId = 0;
+    string userName = "", password = "";
+};
+
 struct Contact
 {
     int id = 0;
@@ -423,13 +429,213 @@ void closeApp()
     exit(0);
 }
 
+void writeNewUserInFile(User user)
+{
+    ofstream usersFile;
+    usersFile.open("users.txt", ios::out | ios::app);
+
+    if (usersFile.good())
+    {
+        usersFile << user.userId << "|";
+        usersFile << user.userName << "|";
+        usersFile << user.password << "|" << endl;
+        usersFile.close();
+    }
+}
+
+User getUserDataFromFile(string lineContent)
+{
+    User user;
+    int numberOfData = 1;
+    string singleData = "";
+
+    for (size_t position = 0; position < lineContent.length(); position++)
+    {
+        if (lineContent[position] != '|')
+        {
+            singleData += lineContent[position];
+        }
+        else
+        {
+            switch (numberOfData)
+            {
+            case 1: user.userId = atoi(singleData.c_str()); break;
+            case 2: user.userName = singleData; break;
+            case 3: user.password = singleData; break;
+            }
+            singleData = "";
+            numberOfData++;
+        }
+    }
+    return user;
+}
+
+void getUsersFromFile(vector <User> &users)
+{
+    User user;
+    string lineContent = "";
+
+    ifstream usersFile("users.txt");
+
+    if (usersFile.good())
+    {
+        while (getline(usersFile, lineContent))
+        {
+            user = getUserDataFromFile(lineContent);
+            users.push_back(user);
+        }
+        usersFile.close();
+    }
+    else
+    {
+        cout << endl << "File with users does not exist." << endl;
+        Sleep(1500);
+    }
+}
+
+bool checkUserName(vector <User> users, string nameSuggestion)
+{
+    bool ifAvailable = false;
+
+    for (vector <User>::iterator itr = users.begin(); itr != users.end(); itr++)
+    {
+        if (itr -> userName == nameSuggestion)
+        {
+            ifAvailable = true;
+            break;
+        }
+    }
+    return ifAvailable;
+}
+
+void registration(vector <User> &users)
+{
+    User user;
+    string nameSuggestion = "";
+
+    system("cls");
+    cout << ">>> ADDING NEW USER <<<" << endl << endl;
+
+    cout << "Enter username: ";
+    nameSuggestion = readLine();
+
+    while (true)
+    {
+        if (checkUserName(users, nameSuggestion))
+        {
+            cout << endl << "Such a user exists. Enter another user name: ";
+            nameSuggestion = readLine();
+        }
+        else
+        {
+            user.userName = nameSuggestion;
+            break;
+        }
+    }
+
+    cout << "Enter password: ";
+    user.password = readLine();
+    users.empty() ? user.userId = 1 : user.userId = users.back().userId + 1;
+
+    users.push_back(user);
+    writeNewUserInFile(user);
+    cout << endl << "Account created." << endl;
+    Sleep(1500);
+}
+
+int login(vector <User> users)
+{
+    string enteredName, enteredPassword;
+
+    cout << endl << "Enter user name: ";
+    enteredName = readLine();
+
+    for (vector <User>::iterator itr = users.begin(); itr != users.end(); itr++)
+    {
+        if (itr -> userName == enteredName)
+        {
+            for (int attempt = 0; attempt < 3; attempt++)
+            {
+                cout << "Enter password. Attempts left " << 3 - attempt << ": ";
+                enteredPassword = readLine();
+
+                if (itr -> password == enteredPassword)
+                {
+                    cout << endl << "You logged in.";
+                    Sleep(1500);
+                    return itr -> userId;
+                }
+            }
+            cout << endl << "You have entered the wrong password 3 times. Wait 3 seconds before next attempt.";
+            Sleep(3000);
+            return 0;
+        }
+    }
+    cout << endl << "There is no user with that login.";
+    Sleep(1500);
+    return 0;
+}
+
+void editUserDataInFile(vector <User> users, int idOfLoggedInUser)
+{
+    string line = "";
+
+    ifstream usersFile("users.txt");
+    ofstream tempFile;
+    tempFile.open("users_temp.txt", ios::out | ios::app);
+
+    if (usersFile.good())
+    {
+        while (getline(usersFile, line))
+        {
+            if (idOfLoggedInUser == getContactIdFromLine(line))
+            {
+                for (vector <User>::iterator itr = users.begin(); itr != users.end(); itr++)
+                {
+                    if (itr -> userId == idOfLoggedInUser)
+                    {
+                        tempFile << itr -> userId << "|";
+                        tempFile << itr -> userName << "|";
+                        tempFile << itr -> password << "|" << endl;
+                    }
+                }
+            }
+            else
+            {
+                tempFile << line << endl;
+            }
+        }
+        usersFile.close();
+        tempFile.close();
+        remove("users.txt");
+        rename("users_temp.txt", "users.txt");
+    }
+}
+
+void changePassword(vector <User> &users, int idOfLoggedInUser)
+{
+    for (vector <User>::iterator itr = users.begin(); itr != users.end(); itr++)
+    {
+        if (itr -> userId == idOfLoggedInUser)
+        {
+            cout << endl <<"Enter new password: ";
+            itr -> password = readLine();
+            editUserDataInFile(users, idOfLoggedInUser);
+            cout << endl << "Password was changed." << endl;
+            Sleep(1500);
+        }
+    }
+}
+
 int main()
 {
+    vector <User> users;
     vector <Contact> contacts;
     int idOfLoggedInUser = 0;
     char choice;
 
-    getContactsFromFile(contacts);
+    getUsersFromFile(users);
+    //getContactsFromFile(contacts);
 
     while (true)
     {
@@ -448,8 +654,8 @@ int main()
 
             switch (choice)
             {
-            //case '1': registration(users); break;
-            //case '2': idOfLoggedInUser = login(users); break;
+            case '1': registration(users); break;
+            case '2': idOfLoggedInUser = login(users); break;
             case '9': exit(0); break;
             }
         }
@@ -480,6 +686,8 @@ int main()
             case '4': showAllContacts(contacts); break;
             case '5': deleteContact(contacts); break;
             case '6': editContact(contacts); break;
+            case '7': changePassword(users, idOfLoggedInUser); break;
+            case '8': idOfLoggedInUser = 0; break;
             }
         }
     }
