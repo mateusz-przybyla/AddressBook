@@ -148,7 +148,7 @@ int getContactsFromFile(vector <Contact> &contacts, int idOfLoggedInUser)
     string lineContent = "";
     int idOfLastContact = 0;
 
-    ifstream contactsFile("contacts.txt");
+    ifstream contactsFile("contacts.txt", ios::in | ios::app);
 
     if (contactsFile.good())
     {
@@ -239,6 +239,7 @@ void searchBySurname(vector <Contact> contacts)
 void showAllContacts(vector <Contact> contacts)
 {
     system("cls");
+    cout << ">>> CONTACTS <<<" << endl << endl;
 
     if (!contacts.empty())
     {
@@ -270,25 +271,22 @@ int getContactIdFromLine(string line)
     return atoi(contactId.c_str());
 }
 
-void deleteLineInFile(int contactIdToBeDeleted)
+int deleteLineInFile(int contactIdToBeDeleted)
 {
     string line = "";
+    int idOfLastContact = 0;
 
     ifstream contactsFile("contacts.txt");
-    ofstream tempFile;
-    tempFile.open("contacts_temp.txt", ios::out | ios::app);
+    ofstream tempFile("contacts_temp.txt", ios::out | ios::app);
 
     if (contactsFile.good())
     {
         while (getline(contactsFile, line))
         {
-            if (contactIdToBeDeleted == getContactIdFromLine(line))
-            {
-                tempFile << "";
-            }
-            else
+            if (contactIdToBeDeleted != getContactIdFromLine(line))
             {
                 tempFile << line << endl;
+                idOfLastContact = getContactIdFromLine(line);
             }
         }
         contactsFile.close();
@@ -296,12 +294,12 @@ void deleteLineInFile(int contactIdToBeDeleted)
         remove("contacts.txt");
         rename("contacts_temp.txt", "contacts.txt");
     }
+    return idOfLastContact;
 }
 
-void deleteContact(vector <Contact> &contacts)
+int deleteContact(vector <Contact> &contacts, int idOfLastContact)
 {
     int contactIdToBeDeleted = 0;
-    bool contactFound = false;
 
     system("cls");
     cout << ">>> DELETING SELECTED CONTACT <<<" << endl << endl;
@@ -312,17 +310,16 @@ void deleteContact(vector <Contact> &contacts)
     {
         if (itr -> contactId == contactIdToBeDeleted)
         {
-            contactFound = true;
             cout << endl << "Confirm with 't': ";
 
             if (getChar() == 't')
             {
                 contacts.erase(itr);
-                deleteLineInFile(contactIdToBeDeleted);
+                idOfLastContact = deleteLineInFile(contactIdToBeDeleted);
 
                 cout << endl << "Contact was deleted.";
                 Sleep(1500);
-                break;
+                return idOfLastContact;
             }
             else
             {
@@ -332,11 +329,16 @@ void deleteContact(vector <Contact> &contacts)
         }
     }
 
-    if (!contactFound)
+    if (contacts.empty())
     {
-        cout << endl << "No contact with that ID on the list.";
+        cout << endl << "Address Book empty.";
         Sleep(1500);
+        return idOfLastContact;
     }
+
+    cout << endl << "No contact with that ID on the list.";
+    Sleep(1500);
+    return idOfLastContact;
 }
 
 char showSubmenu(char choice)
@@ -354,33 +356,26 @@ char showSubmenu(char choice)
     return choice;
 }
 
-void editContactDataInFile(vector <Contact> contacts, int contactIdToBeEdited)
+void editContactDataInFile(Contact contact)
 {
     string line = "";
 
     ifstream contactsFile("contacts.txt");
-    ofstream tempFile;
-    tempFile.open("contacts_temp.txt", ios::out | ios::app);
+    ofstream tempFile("contacts_temp.txt", ios::out | ios::app);
 
     if (contactsFile.good())
     {
         while (getline(contactsFile, line))
         {
-            if (contactIdToBeEdited == getContactIdFromLine(line))
+            if (contact.contactId == getContactIdFromLine(line))
             {
-                for (vector <Contact>::iterator itr = contacts.begin(); itr != contacts.end(); itr++)
-                {
-                    if (itr -> contactId == contactIdToBeEdited)
-                    {
-                        tempFile << itr -> contactId << "|";
-                        tempFile << itr -> userId << "|";
-                        tempFile << itr -> firstName << "|";
-                        tempFile << itr -> surname << "|";
-                        tempFile << itr -> phoneNumber << "|";
-                        tempFile << itr -> email << "|";
-                        tempFile << itr -> address << "|" << endl;
-                    }
-                }
+                tempFile << contact.contactId << "|";
+                tempFile << contact.userId << "|";
+                tempFile << contact.firstName << "|";
+                tempFile << contact.surname << "|";
+                tempFile << contact.phoneNumber << "|";
+                tempFile << contact.email << "|";
+                tempFile << contact.address << "|" << endl;
             }
             else
             {
@@ -405,29 +400,34 @@ void editContact(vector <Contact> &contacts)
     cout << "Enter the contact ID you want to edit: ";
     contactIdToBeEdited = atoi(readLine().c_str());
 
-    for (vector <Contact>::iterator itr = contacts.begin(); itr != contacts.end(); itr++)
+    for (Contact &contact : contacts)
     {
-        if (itr -> contactId == contactIdToBeEdited)
+        if (contact.contactId == contactIdToBeEdited)
         {
             contactFound = true;
             choice = showSubmenu(choice);
 
             switch (choice)
             {
-                case '1': cout << endl << "Enter new first name: ";   itr -> firstName = readLine();
+                case '1': cout << endl << "Enter new first name: ";
+                          contact.firstName = readLine();
                           cout << endl << "First name was changed." << endl; break;
-                case '2': cout << endl << "Enter new surname: ";      itr -> surname = readLine();
+                case '2': cout << endl << "Enter new surname: ";
+                          contact.surname = readLine();
                           cout << endl << "Surname was changed." << endl; break;
-                case '3': cout << endl << "Enter new phone number: "; itr -> phoneNumber = readLine();
+                case '3': cout << endl << "Enter new phone number: ";
+                          contact.phoneNumber = readLine();
                           cout << endl << "Phone number was changed." << endl; break;
-                case '4': cout << endl << "Enter new email: ";        itr -> email = readLine();
+                case '4': cout << endl << "Enter new email: ";
+                          contact.email = readLine();
                           cout << endl << "Email was changed." << endl; break;
-                case '5': cout << endl << "Enter new address: ";      itr -> address = readLine();
+                case '5': cout << endl << "Enter new address: ";
+                          contact.address = readLine();
                           cout << endl << "Address was changed." << endl; break;
                 case '6': break;
                 default: cout << endl << "There is no such option. Try again." << endl << endl; break;
             }
-            editContactDataInFile(contacts, contactIdToBeEdited);
+            editContactDataInFile(contact);
             Sleep(1500);
         }
     }
@@ -452,6 +452,11 @@ void writeNewUserInFile(User user)
         usersFile << user.userName << "|";
         usersFile << user.password << "|" << endl;
         usersFile.close();
+    }
+    else
+    {
+        cout << endl << "Failed to open a file and write data." << endl;
+        Sleep(1500);
     }
 }
 
@@ -487,7 +492,7 @@ void getUsersFromFile(vector <User> &users)
     User user;
     string lineContent = "";
 
-    ifstream usersFile("users.txt");
+    ifstream usersFile("users.txt", ios::in | ios::app);
 
     if (usersFile.good())
     {
@@ -520,7 +525,7 @@ bool checkUserName(vector <User> users, string nameSuggestion)
     return ifAvailable;
 }
 
-void registration(vector <User> &users)
+void registerUser(vector <User> &users)
 {
     User user;
     string nameSuggestion = "";
@@ -555,9 +560,9 @@ void registration(vector <User> &users)
     Sleep(1500);
 }
 
-int login(vector <User> users)
+int loginUser(vector <User> users)
 {
-    string enteredName, enteredPassword;
+    string enteredName = "", enteredPassword = "";
 
     cout << endl << "Enter user name: ";
     enteredName = readLine();
@@ -566,9 +571,9 @@ int login(vector <User> users)
     {
         if (itr -> userName == enteredName)
         {
-            for (int attempt = 0; attempt < 3; attempt++)
+            for (int attempt = 3; attempt > 0; attempt--)
             {
-                cout << "Enter password. Attempts left " << 3 - attempt << ": ";
+                cout << "Enter password. Attempts left " << attempt << ": ";
                 enteredPassword = readLine();
 
                 if (itr -> password == enteredPassword)
@@ -593,8 +598,7 @@ void editUserDataInFile(vector <User> users, int idOfLoggedInUser)
     string line = "";
 
     ifstream usersFile("users.txt");
-    ofstream tempFile;
-    tempFile.open("users_temp.txt", ios::out | ios::app);
+    ofstream tempFile("users_temp.txt", ios::out | ios::app);
 
     if (usersFile.good())
     {
@@ -671,14 +675,8 @@ int main()
 
             switch (choice)
             {
-            case '1': registration(users); break;
-            case '2':
-                idOfLoggedInUser = login(users);
-                if (idOfLoggedInUser > 0)
-                {
-                    idOfLastContact = getContactsFromFile(contacts, idOfLoggedInUser);
-                }
-                break;
+            case '1': registerUser(users); break;
+            case '2': idOfLoggedInUser = loginUser(users); idOfLastContact = getContactsFromFile(contacts, idOfLoggedInUser); break;
             case '9': exit(0); break;
             }
         }
@@ -707,17 +705,10 @@ int main()
             case '2': searchByFirstName(contacts); break;
             case '3': searchBySurname(contacts); break;
             case '4': showAllContacts(contacts); break;
-            case '5':
-                deleteContact(contacts);
-                contacts.clear();
-                idOfLastContact = getContactsFromFile(contacts, idOfLoggedInUser);
-                break;
+            case '5': idOfLastContact = deleteContact(contacts, idOfLastContact); break;
             case '6': editContact(contacts); break;
             case '7': changePassword(users, idOfLoggedInUser); break;
-            case '8':
-                idOfLoggedInUser = 0;
-                contacts.clear();
-                break;
+            case '8': contacts.clear(); idOfLoggedInUser = 0; break;
             }
         }
     }
