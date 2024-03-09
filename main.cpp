@@ -17,6 +17,83 @@ struct Contact
     string firstName = "", surname = "", phoneNumber = "", email = "", address = "";
 };
 
+//reading inputs functions
+string readLine();
+char getChar();
+
+//contact-related functions
+Contact getContactDataFromFile(string lineContent);
+int getContactsFromFile(vector <Contact> &contacts, int idOfLoggedInUser);
+int addContact(vector <Contact> &contacts, int idOfLoggedInUser, int idOfLastContact);
+void writeNewContactInFile(Contact contact);
+void showContact(Contact contact);
+void searchByFirstName(vector <Contact> contacts);
+void searchBySurname(vector <Contact> contacts);
+void showAllContacts(vector <Contact> contacts);
+int getContactIdFromLine(string line);
+int deleteLineInFile(int contactIdToBeDeleted);
+int deleteContact(vector <Contact> &contacts, int idOfLastContact);
+char showSubmenu(char choice);
+void editContactDataInFile(Contact contact);
+void editContact(vector <Contact> &contacts);
+
+//user-related functions
+void writeNewUserInFile(User user);
+User getUserDataFromFile(string lineContent);
+void getUsersFromFile(vector <User> &users);
+bool checkUserName(vector <User> users, string nameSuggestion);
+void registerUser(vector <User> &users);
+int loginUser(vector <User> users);
+void editUserDataInFile(vector <User> users, int idOfLoggedInUser);
+void changePassword(vector <User> &users, int idOfLoggedInUser);
+void closeApp();
+
+//menus
+char selectAnOptionFromMainMenu();
+char selectAnOptionFromUserMenu();
+
+int main()
+{
+    vector <User> users;
+    vector <Contact> contacts;
+    int idOfLoggedInUser = 0, idOfLastContact = 0;
+    char choice;
+
+    getUsersFromFile(users);
+
+    while (true)
+    {
+        if (idOfLoggedInUser == 0)
+        {
+            choice = selectAnOptionFromMainMenu();
+
+            switch (choice)
+            {
+            case '1': registerUser(users); break;
+            case '2': idOfLoggedInUser = loginUser(users); idOfLastContact = getContactsFromFile(contacts, idOfLoggedInUser); break;
+            case '9': exit(0); break;
+            }
+        }
+        else
+        {
+            choice = selectAnOptionFromUserMenu();
+
+            switch (choice)
+            {
+            case '1': idOfLastContact = addContact(contacts, idOfLoggedInUser, idOfLastContact); break;
+            case '2': searchByFirstName(contacts); break;
+            case '3': searchBySurname(contacts); break;
+            case '4': showAllContacts(contacts); break;
+            case '5': idOfLastContact = deleteContact(contacts, idOfLastContact); break;
+            case '6': editContact(contacts); break;
+            case '7': changePassword(users, idOfLoggedInUser); break;
+            case '8': contacts.clear(); idOfLoggedInUser = 0; break;
+            }
+        }
+    }
+    return 0;
+}
+
 string readLine()
 {
     string input = "";
@@ -41,74 +118,6 @@ char getChar()
         cout << endl << "This is not a single character. Type again: ";
     }
     return character;
-}
-
-// CONTACT FUNCTIONS:
-
-void showContact(Contact contact)
-{
-    cout << endl;
-    cout << contact.contactId << "|";
-    cout << contact.userId << "|";
-    cout << contact.firstName << "|";
-    cout << contact.surname << "|";
-    cout << contact.phoneNumber << "|";
-    cout << contact.email << "|";
-    cout << contact.address << "|";
-}
-
-void writeNewContactInFile(Contact contact)
-{
-    ofstream contactsFile;
-    contactsFile.open("contacts.txt", ios::out | ios::app);
-
-    if (contactsFile.good())
-    {
-        contactsFile << contact.contactId << "|";
-        contactsFile << contact.userId << "|";
-        contactsFile << contact.firstName << "|";
-        contactsFile << contact.surname << "|";
-        contactsFile << contact.phoneNumber << "|";
-        contactsFile << contact.email << "|";
-        contactsFile << contact.address << "|" << endl;
-        contactsFile.close();
-    }
-    else
-    {
-        cout << endl << "Failed to open a file and write data." << endl;
-        Sleep(1500);
-    }
-}
-
-int addContact(vector <Contact> &contacts, int idOfLoggedInUser, int idOfLastContact)
-{
-    Contact contact;
-
-    system("cls");
-    cout << ">>> ADDING NEW CONTACT <<<" << endl << endl;
-
-    contact.contactId = idOfLastContact + 1;
-    contact.userId = idOfLoggedInUser;
-
-    cout << endl;
-    cout << "Enter first name: ";
-    contact.firstName = readLine();
-    cout << "Enter surname: ";
-    contact.surname = readLine();
-    cout << "Enter phone number: ";
-    contact.phoneNumber = readLine();
-    cout << "Enter email: ";
-    contact.email = readLine();
-    cout << "Enter address: ";
-    contact.address = readLine();
-
-    contacts.push_back(contact);
-    writeNewContactInFile(contact);
-
-    cout << endl << "New contact was added." << endl;
-    Sleep(1500);
-
-    return idOfLastContact + 1;
 }
 
 Contact getContactDataFromFile(string lineContent)
@@ -170,6 +179,72 @@ int getContactsFromFile(vector <Contact> &contacts, int idOfLoggedInUser)
         Sleep(1500);
     }
     return idOfLastContact;
+}
+
+int addContact(vector <Contact> &contacts, int idOfLoggedInUser, int idOfLastContact)
+{
+    Contact contact;
+
+    system("cls");
+    cout << ">>> ADDING NEW CONTACT <<<" << endl << endl;
+
+    contact.contactId = idOfLastContact + 1;
+    contact.userId = idOfLoggedInUser;
+
+    cout << endl;
+    cout << "Enter first name: ";
+    contact.firstName = readLine();
+    cout << "Enter surname: ";
+    contact.surname = readLine();
+    cout << "Enter phone number: ";
+    contact.phoneNumber = readLine();
+    cout << "Enter email: ";
+    contact.email = readLine();
+    cout << "Enter address: ";
+    contact.address = readLine();
+
+    contacts.push_back(contact);
+    writeNewContactInFile(contact);
+
+    cout << endl << "New contact was added." << endl;
+    Sleep(1500);
+
+    return idOfLastContact + 1;
+}
+
+void writeNewContactInFile(Contact contact)
+{
+    ofstream contactsFile;
+    contactsFile.open("contacts.txt", ios::out | ios::app);
+
+    if (contactsFile.good())
+    {
+        contactsFile << contact.contactId << "|";
+        contactsFile << contact.userId << "|";
+        contactsFile << contact.firstName << "|";
+        contactsFile << contact.surname << "|";
+        contactsFile << contact.phoneNumber << "|";
+        contactsFile << contact.email << "|";
+        contactsFile << contact.address << "|" << endl;
+        contactsFile.close();
+    }
+    else
+    {
+        cout << endl << "Failed to open a file and write data." << endl;
+        Sleep(1500);
+    }
+}
+
+void showContact(Contact contact)
+{
+    cout << endl;
+    cout << contact.contactId << "|";
+    cout << contact.userId << "|";
+    cout << contact.firstName << "|";
+    cout << contact.surname << "|";
+    cout << contact.phoneNumber << "|";
+    cout << contact.email << "|";
+    cout << contact.address << "|";
 }
 
 void searchByFirstName(vector <Contact> contacts)
@@ -439,8 +514,6 @@ void editContact(vector <Contact> &contacts)
     }
 }
 
-//USER FUNCTIONS:
-
 void writeNewUserInFile(User user)
 {
     ofstream usersFile;
@@ -649,68 +722,44 @@ void closeApp()
     exit(0);
 }
 
-int main()
+char selectAnOptionFromMainMenu()
 {
-    vector <User> users;
-    vector <Contact> contacts;
-    int idOfLoggedInUser = 0, idOfLastContact = 0;
     char choice;
 
-    getUsersFromFile(users);
+    system("cls");
+    cout << "======================================" << endl;
+    cout << ">>>>>>>>>>>>>> MAIN MENU <<<<<<<<<<<<<" << endl;
+    cout << "======================================" << endl << endl;
+    cout << "1. Create an account" << endl;
+    cout << "2. Sign in" << endl;
+    cout << "9. Close app" << endl;
+    cout << "======================================" << endl;
+    cout << "Your choice: ";
+    choice = getChar();
 
-    while (true)
-    {
-        if (idOfLoggedInUser == 0)
-        {
-            system("cls");
-            cout << "======================================" << endl;
-            cout << ">>>>>>>>>>>>>> MAIN MENU <<<<<<<<<<<<<" << endl;
-            cout << "======================================" << endl << endl;
-            cout << "1. Create an account" << endl;
-            cout << "2. Sign in" << endl;
-            cout << "9. Close app" << endl;
-            cout << "======================================" << endl;
-            cout << "Your choice: ";
-            choice = getChar();
+    return choice;
+}
 
-            switch (choice)
-            {
-            case '1': registerUser(users); break;
-            case '2': idOfLoggedInUser = loginUser(users); idOfLastContact = getContactsFromFile(contacts, idOfLoggedInUser); break;
-            case '9': exit(0); break;
-            }
-        }
-        else
-        {
-            system("cls");
-            cout << "======================================" << endl;
-            cout << ">>>>>>>>>>>>>> USER MENU <<<<<<<<<<<<<" << endl;
-            cout << "======================================" << endl << endl;
-            cout << "1. Add new contact" << endl;
-            cout << "2. Search by first name" << endl;
-            cout << "3. Search by surname" << endl;
-            cout << "4. Show all contacts" << endl;
-            cout << "5. Delete contact" << endl;
-            cout << "6. Edit contact" << endl;
-            cout << "======================================" << endl;
-            cout << "7. Change password" << endl;
-            cout << "8. Sign out" << endl;
-            cout << "======================================" << endl;
-            cout << "Your choice: ";
-            choice = getChar();
+char selectAnOptionFromUserMenu()
+{
+    char choice;
 
-            switch (choice)
-            {
-            case '1': idOfLastContact = addContact(contacts, idOfLoggedInUser, idOfLastContact); break;
-            case '2': searchByFirstName(contacts); break;
-            case '3': searchBySurname(contacts); break;
-            case '4': showAllContacts(contacts); break;
-            case '5': idOfLastContact = deleteContact(contacts, idOfLastContact); break;
-            case '6': editContact(contacts); break;
-            case '7': changePassword(users, idOfLoggedInUser); break;
-            case '8': contacts.clear(); idOfLoggedInUser = 0; break;
-            }
-        }
-    }
-    return 0;
+    system("cls");
+    cout << "======================================" << endl;
+    cout << ">>>>>>>>>>>>>> USER MENU <<<<<<<<<<<<<" << endl;
+    cout << "======================================" << endl << endl;
+    cout << "1. Add new contact" << endl;
+    cout << "2. Search by first name" << endl;
+    cout << "3. Search by surname" << endl;
+    cout << "4. Show all contacts" << endl;
+    cout << "5. Delete contact" << endl;
+    cout << "6. Edit contact" << endl;
+    cout << "======================================" << endl;
+    cout << "7. Change password" << endl;
+    cout << "8. Sign out" << endl;
+    cout << "======================================" << endl;
+    cout << "Your choice: ";
+    choice = getChar();
+
+    return choice;
 }
