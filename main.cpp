@@ -48,6 +48,10 @@ void editUserDataInFile(vector <User> users, int idOfLoggedInUser);
 void changePassword(vector <User> &users, int idOfLoggedInUser);
 void closeApp();
 
+//menus
+char selectAnOptionFromMainMenu();
+char selectAnOptionFromUserMenu();
+
 int main()
 {
     vector <User> users;
@@ -61,16 +65,7 @@ int main()
     {
         if (idOfLoggedInUser == 0)
         {
-            system("cls");
-            cout << "======================================" << endl;
-            cout << ">>>>>>>>>>>>>> MAIN MENU <<<<<<<<<<<<<" << endl;
-            cout << "======================================" << endl << endl;
-            cout << "1. Create an account" << endl;
-            cout << "2. Sign in" << endl;
-            cout << "9. Close app" << endl;
-            cout << "======================================" << endl;
-            cout << "Your choice: ";
-            choice = getChar();
+            choice = selectAnOptionFromMainMenu();
 
             switch (choice)
             {
@@ -81,22 +76,7 @@ int main()
         }
         else
         {
-            system("cls");
-            cout << "======================================" << endl;
-            cout << ">>>>>>>>>>>>>> USER MENU <<<<<<<<<<<<<" << endl;
-            cout << "======================================" << endl << endl;
-            cout << "1. Add new contact" << endl;
-            cout << "2. Search by first name" << endl;
-            cout << "3. Search by surname" << endl;
-            cout << "4. Show all contacts" << endl;
-            cout << "5. Delete contact" << endl;
-            cout << "6. Edit contact" << endl;
-            cout << "======================================" << endl;
-            cout << "7. Change password" << endl;
-            cout << "8. Sign out" << endl;
-            cout << "======================================" << endl;
-            cout << "Your choice: ";
-            choice = getChar();
+            choice = selectAnOptionFromUserMenu();
 
             switch (choice)
             {
@@ -740,4 +720,46 @@ void closeApp()
 {
     cout << endl << "End of application." << endl;
     exit(0);
+}
+
+char selectAnOptionFromMainMenu()
+{
+    char choice;
+
+    system("cls");
+    cout << "======================================" << endl;
+    cout << ">>>>>>>>>>>>>> MAIN MENU <<<<<<<<<<<<<" << endl;
+    cout << "======================================" << endl << endl;
+    cout << "1. Create an account" << endl;
+    cout << "2. Sign in" << endl;
+    cout << "9. Close app" << endl;
+    cout << "======================================" << endl;
+    cout << "Your choice: ";
+    choice = getChar();
+
+    return choice;
+}
+
+char selectAnOptionFromUserMenu()
+{
+    char choice;
+
+    system("cls");
+    cout << "======================================" << endl;
+    cout << ">>>>>>>>>>>>>> USER MENU <<<<<<<<<<<<<" << endl;
+    cout << "======================================" << endl << endl;
+    cout << "1. Add new contact" << endl;
+    cout << "2. Search by first name" << endl;
+    cout << "3. Search by surname" << endl;
+    cout << "4. Show all contacts" << endl;
+    cout << "5. Delete contact" << endl;
+    cout << "6. Edit contact" << endl;
+    cout << "======================================" << endl;
+    cout << "7. Change password" << endl;
+    cout << "8. Sign out" << endl;
+    cout << "======================================" << endl;
+    cout << "Your choice: ";
+    choice = getChar();
+
+    return choice;
 }
