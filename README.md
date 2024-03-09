@@ -1,7 +1,7 @@
 # AddressBook - Structured
 
-Initial version of the AddressBook application written in a structured paradigm.
-[Here](https://github.com/mateusz-przybyla/PersonalBudget_ObjectOriented) you can find the AddressBook application written in a OOP paradigm.
+Initial version of the AddressBook application written in a structured paradigm.\
+[Here](https://github.com/mateusz-przybyla/AddressBook_ObjectOriented) you can find the AddressBook application written in a OOP paradigm.
 
 ## Table of contents
 
@@ -25,13 +25,13 @@ You can show all your contacts everytime you want or search contacts by first na
 
 Other functionalities:
 
-- editing contacts
-- deleting contacts
-- changing user password
+- Editing contacts
+- Deleting contacts
+- Changing user password
 
 ### Application design
 
-[Plan FreeMind](https://github.com/mateusz-przybyla/AddressBook_ObjectOriented/blob/main/AddressBook_Plan-FreeMind.pdf)
+[Plan FreeMind](https://github.com/mateusz-przybyla/AddressBook_Structured/blob/master/AddressBook_Plan-FreeMind.pdf)
 
 ### Diagram UML
 
@@ -39,14 +39,14 @@ See in AddressBook_ObjectOriented application.
 
 ### Screenshots
 
-Main menu:\
-![](./images/main_menu.jpg)
+- Main menu:\
+  ![](./images/main_menu.jpg)
 
-User menu:\
-![](./images/user_menu.jpg)
+- User menu:\
+  ![](./images/user_menu.jpg)
 
-Show all contacts:\
-![](./images/contacts.jpg)
+- Show all contacts:\
+  ![](./images/contacts.jpg)
 
 ## My process
 
