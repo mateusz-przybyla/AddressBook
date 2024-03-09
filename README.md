@@ -18,7 +18,7 @@ Initial version of the AddressBook application written in a structured paradigm.
 
 ### About
 
-AddressBook application allows to save your friends data such as: first name, surname, phone nuber, email and address.
+AddressBook application allows you to save your friends data such as: first name, surname, phone nuber, email and address.
 Data are saved to the database (.txt file).
 First create a user account and then you can add contacts to the address book.
 You can show all your contacts everytime you want or search contacts by first name or surname.
@@ -39,13 +39,16 @@ See in AddressBook_ObjectOriented application.
 
 ### Screenshots
 
-- Main menu:\
+- Main menu:
+
   ![](./images/main_menu.jpg)
 
-- User menu:\
+- User menu:
+
   ![](./images/user_menu.jpg)
 
-- Show all contacts:\
+- Show all contacts:
+
   ![](./images/contacts.jpg)
 
 ## My process
